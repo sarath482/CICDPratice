@@ -1,31 +1,32 @@
-name: .NET Build and Run   # Name of the workflow as shown in the GitHub Actions UI
+name: .NET Build and Run   # Name of the workflow displayed in GitHub Actions UI
 
 on:
   push:
-    branches: [ main ]     # Trigger this workflow when code is pushed to the 'main' branch
+    branches: [ main ]     # Triggers this workflow when pushing to 'main' branch
   pull_request:
-    branches: [ main ]     # Also trigger this workflow on pull requests targeting 'main' branch
+    branches: [ main ]     # Also triggers this workflow on PRs to 'main' branch
 
 jobs:
   build:
-    runs-on: ubuntu-latest   # Use GitHub-hosted Ubuntu virtual machine for the job
+    runs-on: ubuntu-latest  # Uses the latest Ubuntu VM provided by GitHub runners
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3   # Step 1: Checkout your repository code into the runner
+      uses: actions/checkout@v3   # Step 1: Pull your code from the GitHub repository
 
     - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v4   # Step 2: Install the specified .NET SDK version
+      uses: actions/setup-dotnet@v4   # Step 2: Install .NET SDK in the runner
       with:
-        dotnet-version: '8.0.x'       # Install .NET 8 SDK (can be changed to 6.0.x or 7.0.x if needed)
+        dotnet-version: '8.0.x'       # Specify .NET SDK version 8
 
     - name: Restore dependencies
-      run: dotnet restore dotnetcicd/HelloWorldDotNet.csproj   # Step 3: Restore NuGet packages for the project
+      run: dotnet restore dotnetcicd/HelloWorldDotNet.csproj
+      # Step 3: Restore NuGet packages from the actual path to .csproj
 
     - name: Build the app
       run: dotnet build dotnetcicd/HelloWorldDotNet.csproj --configuration Release
-      # Step 4: Build the project using the specified .csproj file in 'Release' mode
+      # Step 4: Build using the correct .csproj path
 
     - name: Run the app
       run: dotnet run --project dotnetcicd/HelloWorldDotNet.csproj
-      # Step 5: Run the compiled application using the specified project file
+      # Step 5: Run the app from the correct .csproj path
