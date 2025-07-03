@@ -2,31 +2,38 @@ name: .NET Build and Run   # Name of the workflow displayed in GitHub Actions UI
 
 on:
   push:
-    branches: [ main ]     # Triggers this workflow when pushing to 'main' branch
+    branches: [ main ]     # Triggers workflow when pushing to 'main' branch
   pull_request:
-    branches: [ main ]     # Also triggers this workflow on PRs to 'main' branch
+    branches: [ main ]     # Triggers workflow on PRs targeting 'main'
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Uses the latest Ubuntu VM provided by GitHub runners
+    runs-on: ubuntu-latest  # Use GitHub-hosted Ubuntu runner
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3   # Step 1: Pull your code from the GitHub repository
+      uses: actions/checkout@v3   # Step 1: Pull code from repo
 
     - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v4   # Step 2: Install .NET SDK in the runner
+      uses: actions/setup-dotnet@v4   # Step 2: Install .NET 8 SDK
       with:
-        dotnet-version: '8.0.x'       # Specify .NET SDK version 8
+        dotnet-version: '8.0.x'
 
     - name: Restore dependencies
       run: dotnet restore dotnetcicd/HelloWorldDotNet.csproj
-      # Step 3: Restore NuGet packages from the actual path to .csproj
+      # Step 3: Restore NuGet packages for the .csproj file
 
     - name: Build the app
       run: dotnet build dotnetcicd/HelloWorldDotNet.csproj --configuration Release
-      # Step 4: Build using the correct .csproj path
+      # Step 4: Build the app in Release mode
 
     - name: Run the app
       run: dotnet run --project dotnetcicd/HelloWorldDotNet.csproj
-      # Step 5: Run the app from the correct .csproj path
+      # Step 5: Run the app using the .csproj
+
+    - name: Upload build output as artifact
+      uses: actions/upload-artifact@v4   # Step 6: Upload compiled files
+      with:
+        name: dotnet-build-artifacts
+        path: dotnetcicd/bin/Release/net8.0/
+        retention-days: 5  # Optional: keep artifact for 5 days
